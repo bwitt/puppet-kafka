@@ -39,6 +39,13 @@
 #   This is used only with --bootstrap-server option for describing and
 #   altering broker configs (e.g. specify sasl and ssl configs)
 #
+# @param tries
+#   Number of times to try creating the topic, e.g. while the broker is
+#   still starting up.
+#
+# @param try_sleep
+#   Seconds to wait between tries.
+#
 define kafka::topic (
   Optional[String[1]] $ensure                 = undef,
   Optional[String[1]] $zookeeper              = undef,
@@ -48,6 +55,8 @@ define kafka::topic (
   String[1] $bin_dir                          = '/opt/kafka/bin',
   Optional[Hash[String[1],String[1]]] $config = undef,
   Optional[Stdlib::Absolutepath] $cmd_config  = undef,
+  Integer[1] $tries                           = 5,
+  Integer[0] $try_sleep                       = 5,
 ) {
   $_zookeeper          = "--zookeeper ${zookeeper}"
   $_bootstrap_server   = "--bootstrap-server ${bootstrap_server}"
@@ -81,9 +90,11 @@ define kafka::topic (
 
   if $ensure == 'present' {
     exec { "create topic ${name}":
-      path    => "/usr/bin:/usr/sbin/:/bin:/sbin:${bin_dir}",
-      command => "kafka-topics.sh --create ${_connection} ${_replication_factor} ${_partitions} --topic ${name} ${_config}",
-      unless  => "kafka-topics.sh --list ${_connection} | grep -x ${name}",
+      path      => "/usr/bin:/usr/sbin/:/bin:/sbin:${bin_dir}",
+      command   => "kafka-topics.sh --create ${_connection} ${_replication_factor} ${_partitions} --topic ${name} ${_config}",
+      unless    => "kafka-topics.sh --list ${_connection} | grep -x ${name}",
+      tries     => $tries,
+      try_sleep => $try_sleep,
     }
   }
 }

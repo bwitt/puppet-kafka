@@ -23,6 +23,8 @@ describe 'kafka::topic', type: :define do
         it {
           is_expected.to contain_exec('create topic demo').with(
             command: 'kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic demo ',
+            tries: 5,
+            try_sleep: 5,
           )
         }
       end

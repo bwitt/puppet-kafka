@@ -1675,6 +1675,8 @@ The following parameters are available in the `kafka::topic` defined type:
 * [`bin_dir`](#-kafka--topic--bin_dir)
 * [`config`](#-kafka--topic--config)
 * [`cmd_config`](#-kafka--topic--cmd_config)
+* [`tries`](#-kafka--topic--tries)
+* [`try_sleep`](#-kafka--topic--try_sleep)
 
 ##### <a name="-kafka--topic--ensure"></a>`ensure`
 
@@ -1744,3 +1746,20 @@ Property file containing configs to be passed to Admin Client.
 This is used only with --bootstrap-server option for describing and
 
 Default value: `undef`
+
+##### <a name="-kafka--topic--tries"></a>`tries`
+
+Data type: `Integer[1]`
+
+Number of times to try creating the topic, e.g. while the broker is
+still starting up.
+
+Default value: `5`
+
+##### <a name="-kafka--topic--try_sleep"></a>`try_sleep`
+
+Data type: `Integer[0]`
+
+Seconds to wait between tries.
+
+Default value: `5`
